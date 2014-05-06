@@ -1,0 +1,9 @@
+Package: molma
+Type: Package
+Title: Processing of SDF and SMI chemistry files
+Version: 0.2
+Date: 2014-04-16
+Author: Pau Carrio
+Maintainer: <paucarrio@gmail.com>
+Description: Processing of SDF and SMI chemistry files
+License: GNU General Public License Version 3
