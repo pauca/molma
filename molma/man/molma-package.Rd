@@ -1,6 +1,6 @@
-\name{sdfm-package}
-\alias{sdfm-package}
-\alias{sdfm}
+\name{molma-package}
+\alias{molma-package}
+\alias{molma}
 \docType{package}
 \title{
 Processing of SDF and SMI chemistry files
@@ -10,7 +10,7 @@ Processing of SDF and SMI chemistry files
 }
 \details{
 \tabular{ll}{
-Package: \tab sdfm\cr
+Package: \tab molma\cr
 Type: \tab Package\cr
 Version: \tab 1.0\cr
 Date: \tab 2014-04-16\cr
