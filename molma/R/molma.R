@@ -20,19 +20,20 @@ readSmi <- function(file){
   return(as.data.frame(d))
 }
 
-readSdf <-function(file, addIndex = F){
+readSdf <-function(file, addIndex = F, structureColName="STRUCTURE",
+                                       indexColName = "INDEX"){
   con    <- file(file, open = "r")
   fields <-  readSdfFieldNames(file)
   molCounter <- 0
   lineInMol <- 0
   struc <- ""
   
-  if(addmolPositionOriginal){
+  if(addIndex){
     lineTemplate <- matrix(rep(NA,length(fields)+2),nrow=1)  
-    colnames(lineTemplate) <- c("STRUCTURE",fields,"INDEX")
+    colnames(lineTemplate) <- c(structureColName,fields,indexColName)
   }else{
     lineTemplate <- matrix(rep(NA,length(fields)+1),nrow=1)  
-    colnames(lineTemplate) <- c("STRUCTURE",fields)
+    colnames(lineTemplate) <- c(structureColName,fields)
   }
   
   res <- list()
@@ -41,9 +42,9 @@ readSdf <-function(file, addIndex = F){
   while (length(line <- readLines(con, n = 1, warn = FALSE)) > 0) {
     if(grepl( "^(\\$\\$\\$\\$)", line )){
       molCounter <- molCounter + 1
-      toSave[1,"STRUCTURE"] <- struc
-      if(addmolPositionOriginal){
-        toSave[1,"INDEX"] <- molCounter 
+      toSave[1,structureColName] <- struc
+      if(addIndex){
+        toSave[1,indexColName] <- molCounter 
       }
       res[[length(res)+1]]<-toSave
       
@@ -105,27 +106,28 @@ readSdfFieldNames <- function(inFile){
   unique(unlist(fields))
 }
 
-writeSdf<-function( data,file, addIndex = F){
+writeSdf<-function( data,file, addIndex = F, structureColName="STRUCTURE",
+                    indexColName = "INDEX"){
   con  <- file(file, open = "w")  
   cols <- colnames(data)
   if(!addIndex){    
-    if( "INDEX" %in% colnames(data)){
+    if(  indexColName %in% colnames(data)){
       data <- subset(data,select=-INDEX) 
     }
   }else{
-    if( !("INDEX" %in% colnames(data))){
+    if( !( indexColName %in% colnames(data))){
       warning("No Index Column Provided!")
     }
   }
-  if( "STRUCTURE" %in% colnames(data)){
+  if( structureColName %in% colnames(data)){
     data$STRUCTURE <- unfactor(data$STRUCTURE,"c")
   }else{
     warning("No Structure Column Provided!")
     data$STRUCTURE <- "\n NoName\n\n  0  0  0  0  0  0            999 V2000\nM  END\n"
   }
-  cols <- cols[which(cols != "STRUCTURE")]
+  cols <- cols[which(cols != structureColName)]
   for( i in 1:nrow(data)){    
-    writeLines(data[i,"STRUCTURE"], con , sep = "", useBytes = FALSE)
+    writeLines(data[i,structureColName], con , sep = "", useBytes = FALSE)
     for(j in cols){
       writeLines( paste( ">  <",j,">\n",sep="" ), con , sep = "", useBytes = FALSE)
       writeLines( paste( data[i,j],"\n",sep="" ) , con , sep = "", useBytes = FALSE)
